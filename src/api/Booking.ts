@@ -1,4 +1,4 @@
-import bookingController from '../controller/reservaController';
+import bookingController from '../controller/bookingController';
 import { Router } from 'express';
 
 const router = Router();

@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import mongoose, { ConnectOptions } from "mongoose";
 import cors from "cors";
 import User from "./api/User";
-import Booking from "./api/Reserva";
+import Booking from "./api/Booking";
 
 
 const app = express();

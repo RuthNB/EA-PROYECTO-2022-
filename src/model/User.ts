@@ -7,9 +7,9 @@ const User = new Schema({
 	naixement: {
 		type: Schema.Types.Date
 	},
-	trajecte: {
+	route: {
 		type: Schema.Types.ObjectId,
-		ref: "Trajecte"
+		ref: "Route"
 	},
 	comentaris: {
 		type: Schema.Types.ObjectId,
