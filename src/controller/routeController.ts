@@ -1,9 +1,10 @@
-import Route from 'src/model/Route';
-import StopPoint from 'src/model/StopPoint';
-import Participants from 'src/model/Participants';
+import Route from '../model/Route';
+import StopPoint from '../model/StopPoint';
+import Participant from '../model/Participant';
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
+// CREATE NEW ROUTE
 const create = async (req: Request, res: Response) => {
 	const startPoint = req.body.startPoint;
 	const endPoint = req.body.endPoint;
@@ -18,6 +19,8 @@ const create = async (req: Request, res: Response) => {
 	res.status(200).json({ auth: true, token });
 };
 
+// PUT NEW STOP POINT INTO A ROUTE
+
 const newStopPoint = async (req: Request, res: Response) => {
 	const route = await Route.findById(req.params.id);
 	if (!route) {
@@ -30,6 +33,8 @@ const newStopPoint = async (req: Request, res: Response) => {
 		res.json({ status: 'Stop Point Added.' });
 	}
 };
+
+// PUT NEW PARTICIPANT INTO A ROUTE
 
 const newParticipant = async (req: Request, res: Response) => {
 	const route = await Route.findById(req.params.id);
@@ -44,6 +49,48 @@ const newParticipant = async (req: Request, res: Response) => {
 	}
 };
 
+// GET ALL ROUTES
+
+const getAllRoutes = async (req: Request, res: Response) => {
+	const routes = await Route.find().populate('user');
+	res.json(routes);
+};
+
+// GET ALL PARTICIPANTS
+
+const getAllParticipants = async (req: Request, res: Response) => {
+	const participants = await Route.find().populate('route');
+	res.json(participants);
+};
+
+// GET A ROUTE BY ID
+
+const getRoute = async (req: Request, res: Response) => {
+	const route = await Route.findById(req.params.id).populate('user');
+	res.json(route);
+};
+
+
+// UPDATE 
+
+const changePass = async (req: Request, res: Response) => {
+	const user = await User.findById(req.params.id);
+	if (!user) {
+		return res.status(404).send('No user found.');
+	}
+	if(req.body.password === CryptoJS.AES.decrypt(user.password!, 'secret key 123').toString(CryptoJS.enc.Utf8)){
+		let newpassword = req.body.newpassword;
+		newpassword = CryptoJS.AES.encrypt(newpassword, 'secret key 123').toString();
+		user.password = newpassword;
+		await user.save();
+		res.json({ status: 'User Updated' });
+	}
+	else{
+		res.json({ status: 'Wrong password' });
+	}
+};
+
+ //Falta acabar
 const deleteStopPoint = async (req: Request, res: Response) => {
 	const route = await Route.findById(req.params.id);
 	if (!route) {
@@ -58,19 +105,20 @@ const deleteStopPoint = async (req: Request, res: Response) => {
 	}
 };
 
-//Falta saber si es borra dels usuaris o com va
-const realize = async (req: Request, res: Response) => {
+// DELETE ROUTE
+
+const deleteRoute = async (req: Request, res: Response) => {
 	const route = req.body.route;
-	const userID = req.body.user;
-	const findroute = await Route.findOne({ route, user: userID });
-	if (!findroute) {
-		return res.status(400).json({ message: 'Route not found' });
+	const findRoute = await Route.findOne(route);
+	if (!findRoute) {
+		return res.status(400).json({ message: 'Route not found.' });
 	}
-	await Route.findByIdAndDelete(findroute._id);
+	await Route.findByIdAndDelete(findRoute._id);
 	res.status(200).json({ auth: true });
 };
+
 export default{
 	create,
 	newStopPoint,
-	realize
+	deleteRoute
 };

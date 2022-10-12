@@ -21,7 +21,7 @@ const login = async (req: Request, res : Response) => {
 	if (!user) {
 		return res.status(404).send('The email does not exist');
 	}
-	const validPassword = CryptoJS.AES.decrypt(user.password, 'secret key 123').toString(CryptoJS.enc.Utf8);
+	const validPassword = CryptoJS.AES.decrypt(user.password!, 'secret key 123').toString(CryptoJS.enc.Utf8);
 	if (!validPassword) {
 		return res.status(401).json({ auth: false, token: null });
 	}
@@ -54,7 +54,7 @@ const changePass = async (req: Request, res: Response) => {
 	if (!user) {
 		return res.status(404).send('No user found.');
 	}
-	if(req.body.password === CryptoJS.AES.decrypt(user.password, 'secret key 123').toString(CryptoJS.enc.Utf8)){
+	if(req.body.password === CryptoJS.AES.decrypt(user.password!, 'secret key 123').toString(CryptoJS.enc.Utf8)){
 		let newpassword = req.body.newpassword;
 		newpassword = CryptoJS.AES.encrypt(newpassword, 'secret key 123').toString();
 		user.password = newpassword;
@@ -66,6 +66,8 @@ const changePass = async (req: Request, res: Response) => {
 	}
 };
 
+
+// const {id,user,name,completed} = req.body;
 export default {
 	register,
 	login,
