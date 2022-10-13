@@ -2,6 +2,7 @@ import User from '../model/User';
 import jwt from 'jsonwebtoken';
 import CryptoJS from 'crypto-js';
 import { Request, Response } from 'express';
+import Rating from '../model/Rating';
 
 const register = async (req: Request, res: Response) => {
 	const name = req.body.name;
@@ -30,6 +31,22 @@ const login = async (req: Request, res : Response) => {
 	});
 	res.json({ auth: true, token });
 };
+const newRating = async (req: Request, res: Response) => {
+	const author = req.body.author;
+	const comment = req.body.comment;
+	const dest = req.body.dest;
+	const rate = req.body.rate;
+	const user_a = await User.findOne({name:author});
+	const user_d = await User.findOne({name:dest});
+	if (!user_a||!user_d) {
+		return res.status(400).json({ message: 'User not found' });
+	}
+	
+	const newRating = new Rating({ author:user_a.id, comment, dest:user_d.id, rate});
+	await newRating.save();
+
+	res.status(200);
+};
 
 const profile = async (req: Request, res: Response) => {
 	const user = await User.findById(req.params.userId, { password: 0 });
@@ -47,6 +64,10 @@ const getall = async (req: Request, res: Response) => {
 const getone = async (req: Request, res: Response) => {
 	const user = await User.findById(req.params.id);
 	res.json(user);
+};
+const getRatings = async (req: Request, res: Response) => {
+	const ratings = await Rating.find({dest:req.params.id}).populate('user');
+	res.json(ratings);
 };
 
 const changePass = async (req: Request, res: Response) => {
@@ -71,8 +92,10 @@ const changePass = async (req: Request, res: Response) => {
 export default {
 	register,
 	login,
+	newRating,
 	profile,
 	getall,
+	getRatings,
 	getone,
 	changePass
 };
