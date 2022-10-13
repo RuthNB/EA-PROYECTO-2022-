@@ -1,16 +1,16 @@
 import { Schema, model } from 'mongoose';
 
-const Comentari = new Schema({
-    autor: {
+const Rating = new Schema({
+    author: {
 		type: Schema.Types.ObjectId,
 		ref: "User"
 	},
-	comentari: String,
-	comentat: {
+	comment: String,
+	dest: {
 		type: Schema.Types.ObjectId,
 		ref: "User"
 	},
-    valoracio: Number
+    rate: Number
 });
 
-export default model('Comentari', Comentari);
+export default model('Rating', Rating);
