@@ -1,4 +1,4 @@
-import Route from '../model/Route';
+/* import Route from '../model/Route';
 import StopPoint from '../model/StopPoint';
 import Participant from '../model/Participant';
 import jwt from 'jsonwebtoken';
@@ -71,7 +71,7 @@ const getRoute = async (req: Request, res: Response) => {
 };
 
 
-// UPDATE 
+// UPDATE
 
 const changePass = async (req: Request, res: Response) => {
 	const user = await User.findById(req.params.id);
@@ -90,7 +90,7 @@ const changePass = async (req: Request, res: Response) => {
 	}
 };
 
- //Falta acabar
+ // Falta acabar
 const deleteStopPoint = async (req: Request, res: Response) => {
 	const route = await Route.findById(req.params.id);
 	if (!route) {
@@ -121,4 +121,4 @@ export default{
 	create,
 	newStopPoint,
 	deleteRoute
-};
+}; */

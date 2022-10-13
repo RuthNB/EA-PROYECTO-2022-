@@ -1,4 +1,4 @@
-import StopPoint from '../model/StopPoint';
+/* import StopPoint from '../model/StopPoint';
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
@@ -27,7 +27,7 @@ if(req.body.password === CryptoJS.AES.decrypt(user.password!, 'secret key 123').
 	res.json({ status: 'User Updated' });
 }
 else{
-	let newStopPoint = req.body.newStopPoint;
+	const newStopPoint = req.body.newStopPoint;
 	StopPoint.
 
 	res.json({ status: 'Wrong password' });
@@ -45,3 +45,4 @@ const deleteStopPoint = async (req: Request, res: Response) => {
 	await StopPoint.findByIdAndDelete(findStopPoint._id);
 	res.status(200).json({ auth: true });
 };
+ */

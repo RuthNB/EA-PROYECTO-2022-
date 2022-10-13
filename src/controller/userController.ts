@@ -1,4 +1,4 @@
-import User from '../model/User';
+/* import User from '../model/User';
 import jwt from 'jsonwebtoken';
 import CryptoJS from 'crypto-js';
 import { Request, Response } from 'express';
@@ -75,4 +75,4 @@ export default {
 	getall,
 	getone,
 	changePass
-};
+}; */
