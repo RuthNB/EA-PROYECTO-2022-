@@ -1,17 +1,18 @@
 import Route from '../model/Route';
-import StopPoint from '../model/StopPoint';
-import Participant from '../model/Participant';
+import Point from '../model/Point';
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
 // CREATE NEW ROUTE
+
 const create = async (req: Request, res: Response) => {
+	const name = req.body.name;
+	const creator = req.body.creator;
+	const participants = req.body.participants;
 	const startPoint = req.body.startPoint;
 	const endPoint = req.body.endPoint;
 	const stopPoint = req.body.stopPoint;
-	const creator = req.body.creator;
-	const participants = req.body.participants;
-	const newRoute = new Route({ startPoint, endPoint, stopPoint,creator,participants });
+	const newRoute = new Route({ name,creator,participants,startPoint, endPoint, stopPoint});
 	await newRoute.save();
 	const token = jwt.sign({ id: newRoute._id }, 'yyt#KInN7Q9X3m&$ydtbZ7Z4fJiEtA6uHIFzvc@347SGHAjV4E', {
 		expiresIn: 60 * 60 * 24
@@ -19,7 +20,7 @@ const create = async (req: Request, res: Response) => {
 	res.status(200).json({ auth: true, token });
 };
 
-// PUT NEW STOP POINT INTO A ROUTE
+// PUT NEW POINT INTO A ROUTE
 
 const newStopPoint = async (req: Request, res: Response) => {
 	const route = await Route.findById(req.params.id);
@@ -27,11 +28,12 @@ const newStopPoint = async (req: Request, res: Response) => {
 		return res.status(404).send('No route found.');
 	}
 	else{
-		const newEndPoint = req.body.newEndPoint;
-		route.endPoint = route.endPoint + newEndPoint;
-		await route.save();
-		res.json({ status: 'Stop Point Added.' });
-	}
+		Route.updateOne({"_id":req.body.id}, {$addToSet: {Point: req.body.Point}})
+            .then((data) => {
+        res.status(201).json(data);
+    }).catch((err) => {
+        res.status(500).json(err);
+    })}
 };
 
 // PUT NEW PARTICIPANT INTO A ROUTE
@@ -42,26 +44,35 @@ const newParticipant = async (req: Request, res: Response) => {
 		return res.status(404).send('No route found.');
 	}
 	else{
-		const newParticipant = req.body.newParticipant;
-		route.participants = route.participants + newParticipant;
-		await route.save();
-		res.json({ status: 'New Participant Added.' });
-	}
+		Route.updateOne({"_id":req.body.id}, {$addToSet: {participants: req.body.participant}})
+            .then((data) => {
+        res.status(201).json(data);
+    }).catch((err) => {
+        res.status(500).json(err);
+    })}
 };
 
 // GET ALL ROUTES
 
 const getAllRoutes = async (req: Request, res: Response) => {
-	const routes = await Route.find().populate('user');
+	const routes = await Route.find();
 	res.json(routes);
 };
 
-// GET ALL PARTICIPANTS
+// GET ALL PARTICIPANTS OF A ROUTE
 
 const getAllParticipants = async (req: Request, res: Response) => {
-	const participants = await Route.find().populate('route');
+	const participants = await Route.findById(req.params.id).populate('user');
 	res.json(participants);
 };
+
+// GET ALL STOP POINTS OF A ROUTE
+
+const getAllPoints = async (req: Request, res: Response) => {
+	const Points = await Route.findById(req.params.id).populate('Points');
+	res.json(Points);
+};
+
 
 // GET A ROUTE BY ID
 
@@ -71,37 +82,22 @@ const getRoute = async (req: Request, res: Response) => {
 };
 
 
-// UPDATE 
+// UPDATE A ROUTE BY ID
 
-const changePass = async (req: Request, res: Response) => {
-	const user = await User.findById(req.params.id);
-	if (!user) {
-		return res.status(404).send('No user found.');
-	}
-	if(req.body.password === CryptoJS.AES.decrypt(user.password!, 'secret key 123').toString(CryptoJS.enc.Utf8)){
-		let newpassword = req.body.newpassword;
-		newpassword = CryptoJS.AES.encrypt(newpassword, 'secret key 123').toString();
-		user.password = newpassword;
-		await user.save();
-		res.json({ status: 'User Updated' });
-	}
-	else{
-		res.json({ status: 'Wrong password' });
-	}
-};
-
- //Falta acabar
-const deleteStopPoint = async (req: Request, res: Response) => {
-	const route = await Route.findById(req.params.id);
-	if (!route) {
+const updateRoute = async (req: Request, res: Response) => {
+	const updatedRoute = await Route.findById(req.params.id);
+	if (!updatedRoute) {
 		return res.status(404).send('No route found.');
 	}
-	if(route.endPoint.findByIdAndDelete(req.params.id);)
 	else{
-		const newEndPoint = req.body.newEndPoint;
-		route.endPoint = route.endPoint + newEndPoint;
-		await route.save();
-		res.json({ status: 'Stop Point Added.' });
+		updatedRoute.name = req.body.name;
+		updatedRoute.creator = req.body.creator;
+		updatedRoute.participants= req.body.participants;
+		updatedRoute.startPoint=req.body.startPoint;
+		updatedRoute.endPoint=req.body.endPoint;
+		updatedRoute.stopPoint=req.body.stopPoint;
+		await updatedRoute.save();
+		res.json({ status: 'Route Updated' });
 	}
 };
 
@@ -120,5 +116,10 @@ const deleteRoute = async (req: Request, res: Response) => {
 export default{
 	create,
 	newStopPoint,
+	newParticipant,
+	getAllParticipants,
+	getAllRoutes,
+	getAllPoints,
+	updateRoute,
 	deleteRoute
 };

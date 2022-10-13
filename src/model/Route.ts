@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
-import StopPoint from './StopPoint';
+import Point from './Point';
 import User from './User';
-import Participants from './Participant';
+import Participant from './Participant';
 
 const Route = new Schema({
 	name: String,
@@ -9,20 +9,22 @@ const Route = new Schema({
         type: Schema.Types.ObjectId,
         ref: User,
     },
-    participants: {
+    participants: [{
         type: Schema.Types.ObjectId,
-        ref: Participants,
-    },
+        ref: User,
+    }],
     startPoint: {
-        type: Array,
+        type: Schema.Types.ObjectId,
+        ref: Point,
     },
     endPoint: {
-        type: Array,
-    },
-    stopPoint: {
         type: Schema.Types.ObjectId,
-        ref: StopPoint,
-    }
+        ref: Point,
+    },
+    stopPoint: [{
+        type: Schema.Types.ObjectId,
+        ref: Point,
+    }]
 });
 
 export default model('Route', Route);
